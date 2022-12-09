@@ -2,8 +2,10 @@
   <div class="container">
     <navigation></navigation>
     <div v-for="item in potential_friends" class="my-4">
-      Имя: {{getFullName(item)}}<br>
-      Пол: {{item.sex}}<br>
+      <img :src="item.avatar" alt="mdo" width="32" height="32"
+           class="rounded-circle">
+      Имя: {{ getFullName(item) }}<br>
+      Пол: {{ item.sex }}<br>
       <button @click="addFriend(item.id)" class="btn btn-success btn-sm">Добавить</button>
     </div>
   </div>

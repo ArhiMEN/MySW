@@ -2,7 +2,10 @@
   <div class="container">
     <navigation is-friends-view></navigation>
     <div v-for="item in friends" class="my-4">
-      {{ getFullName(item) }}<br>
+      <div class="m-1">
+        <img :src="item.avatar" alt="mdo" width="32" height="32"
+             class="rounded-circle"> {{ getFullName(item) }}
+      </div>
       <button @click="$router.push({name: 'messages', params: {id:item.id}})" class="btn btn-primary btn-sm m-1">
         Отправить сообщение
       </button>

@@ -28,6 +28,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def dict(self):
         return {'id': self.id,
+                'avatar': self.avatar_url(),
                 'first_name': self.first_name,
                 'last_name': self.last_name,
                 'middle_name': self.middle_name,

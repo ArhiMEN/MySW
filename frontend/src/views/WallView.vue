@@ -1,20 +1,20 @@
 <template>
   <div class="container">
     <navigation></navigation>
-    <p  v-show="!empty" v-for="item in entries" class="border text-break">
-      <small class="text-muted">Название записи: </small>
-      <span class="fst-italic fw-bold">{{ item.title }}</span><br>
-      <small class="text-muted">Дата записи: </small>
+    <div v-show="!empty" v-for="item in entries" class="border text-break rounded my-3">
+      <small class="text-muted m-1">Дата записи:</small>
       <u>{{ item.date }}</u><br>
-      <small class="text-muted">Текст записи: </small>
-      {{ item.text }}
-    </p>
+      <small class="text-muted m-1">Название записи:</small>
+      <span class="fst-italic fw-bold m-1">{{ item.title }}</span><br>
+      <small class="text-muted m-1">Текст записи: </small>
+      <p class="m-1">{{ item.text }}</p>
+    </div>
     <p v-show="empty">Вы ещё не оставили ни одной записи на стене.</p>
 
-    <input type="text" placeholder="Введите название" class="form-control" name="title" v-model="form.title" required>
+    <input type="text" placeholder="Введите название" class="form-control my-1" name="title" v-model="form.title" required>
     <div class="invalid-feedback">Введите название.</div>
     <span class="text-danger">{{ validate_errors.title }}</span>
-    <textarea placeholder="Введите текст" class="form-control" name="text" rows="5" v-model="form.text"
+    <textarea placeholder="Введите текст" class="form-control my-1" name="text" rows="5" v-model="form.text"
               required></textarea>
     <span class="text-danger">{{ validate_errors.text }}</span>
     <button class="w-100 btn btn-lg btn-primary" @click="addEntry">Создать запись</button>
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     getEntry() {
-      axios.post('/api/wall/entries/', qs.stringify({user_id: store.getters.getToken}),{headers: {'Authorisation': store.getters.getToken}})
+      axios.post('/api/wall/entries/', qs.stringify({user_id: store.getters.getToken}), {headers: {'Authorisation': store.getters.getToken}})
           .then((resp) => {
             if (resp.data.success) {
               this.entries = resp.data.entries
@@ -69,6 +69,10 @@ export default {
               this.validate_errors = resp.data.validate_errors
             }
           })
+    },
+    getDate(date) {
+      let time = new Date(date)
+      return time.getUTCFullYear()
     }
   },
   mounted() {

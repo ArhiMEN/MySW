@@ -110,7 +110,6 @@ export default {
           .then((resp) => {
             if (resp.data.success) {
               store.commit('setToken', resp.data.token)
-              store.commit('setAvatarUrl', resp.data.avatar_url)
               router.push({name: 'account'})
             } else {
               this.validate_errors = resp.data.validate_errors

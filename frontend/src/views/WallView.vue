@@ -52,6 +52,7 @@ export default {
           .then((resp) => {
             if (resp.data.success) {
               this.entries = resp.data.entries
+              this.empty = false
             } else if (resp.data.empty) {
               this.empty = true
             }

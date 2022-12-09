@@ -63,3 +63,7 @@ class AvatarForm(forms.Form):
 
 class UserIdForm(forms.Form):
     user_id = forms.IntegerField(min_value=1)
+
+
+class FileIdForm(forms.Form):
+    file_id = forms.IntegerField(min_value=1)

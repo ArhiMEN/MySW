@@ -9,6 +9,8 @@ import FriendsView from "@/views/FriendsView";
 import AddFriendsView from "@/views/AddFriendsView";
 import MessageView from "@/views/MessageView";
 import FriendWallView from "@/views/FriendWallView";
+import FilesView from "@/views/FilesView";
+import SettingsView from "@/views/SettingsView";
 
 Vue.use(VueRouter)
 
@@ -21,15 +23,21 @@ function isAuth(to, from, next) {
 }
 
 const routes = [
-  {
-    path: '/',
-    name: 'login',
-    component: LoginView
-  },
-  {
+    {
+        path: '/',
+        name: 'login',
+        component: LoginView
+    },
+    {
         path: '/registration/',
         name: 'registration',
         component: RegistrationView
+    },
+    {
+        path: '/settings/',
+        name: 'settings',
+        component: SettingsView,
+        beforeEnter: isAuth
     },
     {
         path: '/account/',
@@ -67,10 +75,16 @@ const routes = [
         component: FriendWallView,
         beforeEnter: isAuth
     },
+    {
+        path: '/account/files/',
+        name: 'files',
+        component: FilesView,
+        beforeEnter: isAuth
+    },
 ]
 
 const router = new VueRouter({
-  routes
+    routes
 })
 
 export default router

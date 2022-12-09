@@ -18,6 +18,7 @@
       </div>
     </div>
     <textarea class="form-control" placeholder="Введите текс" v-model="form.text" name="text" required></textarea>
+    <span class="text-danger">{{ validate_errors.text }}</span>
     <button @click="sendMessage" class="w-100 btn btn-lg btn-primary">Отправить</button>
   </div>
 </template>
@@ -63,7 +64,7 @@ export default {
               this.getMessages()
               this.form.text = ''
             } else {
-              // send error
+              this.validate_errors = resp.data.validate_errors
             }
           })
     },

@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, logout
 from django.views.decorators.http import require_GET, require_POST
 
 from .models import CustomUser, Wall, Message, File
-from .forms import RegistrationForm, AuthForm, WallForm, MessageForm, FileForm, AvatarForm, UserIdForm
+from .forms import RegistrationForm, AuthForm, WallForm, MessageForm, FileForm, AvatarForm, UserIdForm, FileIdForm
 
 
 def user_auth(request):
@@ -30,7 +30,7 @@ def login_action(request):
         password = form.cleaned_data['password']
         user = authenticate(email=email, password=password)
         if user is not None:
-            return JsonResponse({'success': True, 'token': user.id})
+            return JsonResponse({'success': True, 'token': user.id, 'avatar_url': user.avatar_url()})
         form.add_error("", "Введён неправильный логин или пароль.")
         return JsonResponse({'success': False, 'form': form_data, 'validate_errors': form.errors})
     return JsonResponse({'success': False, 'form': form_data, 'validate_errors': form.errors})
@@ -88,9 +88,11 @@ def wall_entries_list(request):
     user_auth(request)
     if not request.user.is_authenticated:
         return JsonResponse({'success': False})
+
     form = UserIdForm(request.POST)
     if not form.is_valid():
         return JsonResponse({'success': False})
+
     u = CustomUser.objects.get(pk=form.cleaned_data['user_id'])
     entries = u.wall_set.all()
     wall_c = []
@@ -98,6 +100,7 @@ def wall_entries_list(request):
         wall_c.append(entry.dict())
     if len(entries) == 0:
         return JsonResponse({'success': False, 'empty': True})
+
     return JsonResponse({'success': True, 'entries': wall_c})
 
 
@@ -239,66 +242,92 @@ def send_messages(request):
     form_message = MessageForm(request.POST)
     if form_message.is_valid():
         text = form_message.cleaned_data['text']
-        n_message = Message(text_message=text, recipient_id=form_user_id.cleaned_data['user_id'], sender_id=request.user.id)
+        n_message = Message(text_message=text, recipient_id=form_user_id.cleaned_data['user_id'],
+                            sender_id=request.user.id)
         n_message.save()
         return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'validate_errors': form_message.errors})
 
 
-def files(request):
+@require_GET
+def get_files(request):
+    user_auth(request)
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False})
+
+    user = CustomUser.objects.get(pk=request.user.id)
+    files = user.file_set.all()
+    files_c = []
+    for i in files:
+        files_c.append(i.dict())
+    if len(files) == 0:
+        return JsonResponse({'success': False, 'empty': True})
+
+    return JsonResponse({'success': True, 'files': files_c})
+
+
+@require_POST
+def upload_file(request):
+    user_auth(request)
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False})
+
+    form = FileForm(request.POST, request.FILES)
+    if form.is_valid():
+        name = form.cleaned_data['name']
+        n_file = File(name=name, file=request.FILES['new_file'], owner_id=request.user.id,
+                      content_type=request.FILES['new_file'].content_type, is_image=False)
+        n_file.save()
+        file_extension = n_file.file.name.split(".")[-1]
+        extension = {'png', 'jpg', 'gif', 'bmp'}
+
+        if file_extension in extension:
+            n_file.is_image = True
+            n_file.save(update_fields=["is_image"])
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'validate_errors': form.errors})
+
+
+@require_GET
+def download_file(request, file_id):
+    # user_auth(request)
+    # if not request.user.is_authenticated:
+    #     return JsonResponse({'success': False})
+
+    file = File.objects.get(id=file_id)
+    c_t = file.content_type
+    response = HttpResponse(open("./media/" + file.file.name, 'rb').read(), content_type=c_t)
+    response['Content-Disposition'] = 'attachment; filename=' + file.pure_name
+    return response
+
+
+@require_POST
+def delete_file(request):
+    user_auth(request)
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False})
+
+    form_file_id = FileIdForm(request.POST)
+    if not form_file_id.is_valid():
+        return JsonResponse({'success': False})
+
+    file = File.objects.get(id=form_file_id.cleaned_data['file_id'])
+    os.remove("./media/" + str(file.file))
+    file.delete()
+    return JsonResponse({'success': True})
+
+
+@require_POST
+def change_avatar(request):
+    user_auth(request)
     if not request.user.is_authenticated:
         return HttpResponseRedirect('/')
-    else:
-        if request.method == 'POST':
-            form = FileForm(request.POST, request.FILES)
-            if form.is_valid():
-                name = form.cleaned_data['name']
-                n_file = File(name=name, file=request.FILES['new_file'], owner_id=request.user.id,
-                              content_type=request.FILES['new_file'].content_type, is_image=False)
-                n_file.save()
-                file_extension = n_file.file.name.split(".")[-1]
-                extension = {'png', 'jpg', 'gif', 'bmp'}
-                if file_extension in extension:
-                    n_file.is_image = True
-                    n_file.save(update_fields=["is_image"])
-                return redirect(request.path)
-        else:
-            form = FileForm()
+
+    form = AvatarForm(request.POST, request.FILES)
+    if form.is_valid():
         user = CustomUser.objects.get(pk=request.user.id)
-        user_files = user.file_set.all()
-        return render(request, 'account/account_files.html', context={'form': form, 'files': user_files})
-
-
-def file_load(request, file_id):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect('/')
-    else:
-        file = File.objects.get(id=file_id)
-        c_t = file.content_type
-        response = HttpResponse(open("./media/" + file.file.name, 'rb').read(), content_type=c_t)
-        response['Content-Disposition'] = 'attachment; filename=' + file.pure_name
-        return response
-
-
-def file_delete(request, file_id):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect('/')
-    else:
-        file = File.objects.get(id=file_id)
-        os.remove("./media/" + str(file.file))
-        file.delete()
-        return HttpResponseRedirect('/account/files/')
-
-
-def settings(request):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect('/')
-    else:
-        if request.method == 'POST':
-            form = AvatarForm(request.POST, request.FILES)
-            user = CustomUser.objects.get(pk=request.user.id)
-            user.avatar = request.FILES['new_avatar']
-            user.save(update_fields=["avatar"])
-            return redirect(request.path)
-        else:
-            form = AvatarForm()
-        return render(request, 'account/account_settings.html', context={'form': form, 'user': request.user})
+        user.avatar = request.FILES['new_avatar']
+        user.save(update_fields=["avatar"])
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'validate_errors': form.errors})

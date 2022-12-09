@@ -15,8 +15,9 @@ urlpatterns = [
     path('friends/delete/', views.friends_delete_user),
     path('friends/get_messages/', views.get_messages),
     path('friends/send_message/', views.send_messages),
-    path('files/', views.files),
-    path('files/load/', views.file_load),
-    path('files/delete/', views.file_delete),
-    path('settings/', views.settings),
+    path('files/get/', views.get_files),
+    path('files/upload/', views.upload_file),
+    path('files/download/<int:file_id>/', views.download_file),
+    path('files/delete/', views.delete_file),
+    path('settings/change_avatar/', views.change_avatar),
 ]

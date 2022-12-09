@@ -10,7 +10,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
-    avatar = models.ImageField(upload_to='media/', null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatar/', null=True, blank=True)
     friends = models.ManyToManyField('CustomUser', symmetrical=False)
     first_name = models.CharField(max_length=15)
     last_name = models.CharField(max_length=15)
@@ -102,3 +102,12 @@ class File(models.Model):
     def pure_name(self):
         name = str(self.file).split("/")[-1]
         return name
+
+    def dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'url': self.file_url,
+            'pure_name': self.pure_name,
+            'is_image': self.is_image,
+        }

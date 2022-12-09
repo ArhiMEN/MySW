@@ -7,6 +7,7 @@
           <li><a href="#" @click="$router.push({name: 'friends'})" class="nav-link px-2 link-dark">Друзья</a></li>
           <li><a href="#" class="nav-link px-2 link-dark">Ваши файлы</a></li>
         </ul>
+        <button v-show="isFriendsView" @click="$router.push({name: 'add_friends'})" class="btn btn-success btn-sm m-1">Добавить друга</button>
         <div class="dropdown text-end">
           <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
              data-bs-toggle="dropdown" aria-expanded="false">
@@ -43,6 +44,9 @@ export default {
             }
           })
     }
+  },
+  props: {
+    isFriendsView: Boolean
   }
 }
 </script>

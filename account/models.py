@@ -79,6 +79,7 @@ class Wall(models.Model):
 
     def dict(self):
         return {
+            'name': self.sender.get_full_name(),
             'date': self.message_date,
             'title': self.title,
             'text': self.text_message

@@ -8,6 +8,7 @@ import WallView from "@/views/WallView";
 import FriendsView from "@/views/FriendsView";
 import AddFriendsView from "@/views/AddFriendsView";
 import MessageView from "@/views/MessageView";
+import FriendWallView from "@/views/FriendWallView";
 
 Vue.use(VueRouter)
 
@@ -58,6 +59,12 @@ const routes = [
         path: '/account/friends/messages/:id',
         name: 'messages',
         component: MessageView,
+        beforeEnter: isAuth
+    },
+    {
+        path: '/account/friends/wall/:id',
+        name: 'friend_wall',
+        component: FriendWallView,
         beforeEnter: isAuth
     },
 ]

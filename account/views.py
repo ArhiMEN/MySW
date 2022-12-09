@@ -83,16 +83,21 @@ def account_exit(request):
     return JsonResponse({'success': True})
 
 
-@require_GET
+@require_POST
 def wall_entries_list(request):
     user_auth(request)
     if not request.user.is_authenticated:
         return JsonResponse({'success': False})
-
-    u = CustomUser.objects.get(pk=request.user.id)
+    form = UserIdForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({'success': False})
+    u = CustomUser.objects.get(pk=form.cleaned_data['user_id'])
+    entries = u.wall_set.all()
     wall_c = []
-    for entry in u.wall_set.all():
+    for entry in entries:
         wall_c.append(entry.dict())
+    if len(entries) == 0:
+        return JsonResponse({'success': False, 'empty': True})
     return JsonResponse({'success': True, 'entries': wall_c})
 
 
@@ -237,15 +242,6 @@ def send_messages(request):
         n_message = Message(text_message=text, recipient_id=form_user_id.cleaned_data['user_id'], sender_id=request.user.id)
         n_message.save()
         return JsonResponse({'success': True})
-
-
-def friends_wall_user(request, user_id):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect('/')
-    else:
-        friend = CustomUser.objects.get(pk=user_id)
-        friend_wall = friend.wall_set.all()
-        return render(request, 'account/account_friends_wall.html', context={'wall': friend_wall, 'friend': friend})
 
 
 def files(request):

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <navigation></navigation>
-    <p v-for="item in entries" class="border text-break">
+    <p  v-show="!empty" v-for="item in entries" class="border text-break">
       <small class="text-muted">Название записи: </small>
       <span class="fst-italic fw-bold">{{ item.title }}</span><br>
       <small class="text-muted">Дата записи: </small>
@@ -9,6 +9,7 @@
       <small class="text-muted">Текст записи: </small>
       {{ item.text }}
     </p>
+    <p v-show="empty">Вы ещё не оставили ни одной записи на стене.</p>
 
     <input type="text" placeholder="Введите название" class="form-control" name="title" v-model="form.title" required>
     <div class="invalid-feedback">Введите название.</div>
@@ -31,6 +32,7 @@ export default {
   components: {Navigation},
   data() {
     return {
+      empty: null,
       entries: {
         entry: []
       },
@@ -46,10 +48,12 @@ export default {
   },
   methods: {
     getEntry() {
-      axios.get('/api/wall/entries/', {headers: {'Authorisation': store.getters.getToken}})
+      axios.post('/api/wall/entries/', qs.stringify({user_id: store.getters.getToken}),{headers: {'Authorisation': store.getters.getToken}})
           .then((resp) => {
             if (resp.data.success) {
               this.entries = resp.data.entries
+            } else if (resp.data.empty) {
+              this.empty = true
             }
           })
     },

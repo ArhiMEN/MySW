@@ -1,11 +1,12 @@
 <template>
   <div class="container">
-    <navigation></navigation>
-      <button @click="$router.push({name: 'add_friends'})" class="btn btn-success btn-sm m-1">Добавить друга</button>
+    <navigation is-friends-view></navigation>
     <div v-for="item in friends" class="my-4">
       {{ getFullName(item) }}<br>
-      <button @click="$router.push({name: 'messages', params: {id:item.id}})" class="btn btn-primary btn-sm m-1">Отправить сообщение</button>
-      <button class="btn btn-warning btn-sm m-1">Посмотреть стену</button>
+      <button @click="$router.push({name: 'messages', params: {id:item.id}})" class="btn btn-primary btn-sm m-1">
+        Отправить сообщение
+      </button>
+      <button @click="$router.push({name: 'friend_wall', params: {id:item.id}})" class="btn btn-warning btn-sm m-1">Посмотреть стену</button>
       <button @click="deleteFriend(item.id)" class="btn btn-danger btn-sm m-1">Удалить из друзей</button>
     </div>
   </div>

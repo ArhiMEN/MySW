@@ -1,0 +1,11 @@
+{% extends "account/body.html" %}
+{% block body %}
+<div class="container">
+    <form action="/account/settings/" enctype="multipart/form-data" method="post" id="a_create">
+        {% csrf_token %}
+        <input class="form-control" type="file" id="file" name="new_avatar" required>
+        <button id="b_a_create" form="a_create" class="w-100 btn btn-lg btn-primary" type="submit">Сменить аватарку
+        </button>
+    </form>
+</div>
+{% endblock %}

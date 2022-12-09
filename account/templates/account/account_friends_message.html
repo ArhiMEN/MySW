@@ -1,0 +1,55 @@
+{% extends "account/body.html" %}
+{% block body %}
+    <div class="container">
+        <h3 class="text-center">Ваша переписка с пользователем: {{ recipient.get_full_name }}</h3>
+        {% for messages_list in messages %}
+            <div class="text-center">{{ messages_list.date }}</div>
+            {% for message in messages_list.messages %}
+                {% if sender_id == message.sender_id %}
+                    <div class="row justify-content-center">
+                        <div class="col-3"></div>
+                        <div class="col-3">
+                            <div class="border text-break rounded-4 my-2">
+                                <p class="mx-2 my-1">{{ message }}</p>
+                                <div class="text-end mx-2 my-1">
+                                    <small class="text-muted">{{ message.message_date.time }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                            <div class="border text-break rounded-4 my-1">
+                                <p class="mx-2 my-2">{{ message }}</p>
+                                <div class="text-end mx-2 my-1">
+                                    <small class="text-muted">{{ message.message_date.time }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3"></div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <br>
+        {% endfor %}
+
+        {% for date in dates %}
+            <div class="text-center">{{ date }}</div>
+            {% for content in messages %}
+
+            {% endfor %}
+        {% endfor %}
+
+    </div>
+
+    <div class="form-signin w-50 m-auto bottom-flex">
+        <form action="/account/friends/message/{{ recipient.id }}/" method="post" id="m_send">
+            {% csrf_token %}
+            <textarea class="form-control" id="text" placeholder="Введите текс" name="text" required></textarea>
+            <button id="b_m_send" form="m_send" class="w-100 btn btn-lg btn-primary" type="submit">Отправить
+            </button>
+        </form>
+    </div>
+    </div>
+{% endblock %}

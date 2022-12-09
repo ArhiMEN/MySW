@@ -1,0 +1,22 @@
+{% extends "account/body.html" %}
+{% block body %}
+<div class="container">
+    {% for content in wall %}
+        <p class="border">
+                <small class="text-muted">Название записи:</small>
+                <span class="fst-italic fw-bold">{{ content.title }}</span><br>
+                <small class="text-muted">Дата записи:</small>
+                <u>{{ content.message_date }}</u><br>
+                <small class="text-muted">Текст записи:</small>
+                {{ content.text_message }}
+            </p>
+    {% endfor %}
+    <form action="/account/wall/" method="post" id="w_create">
+        {% csrf_token %}
+        <input type="text" placeholder="Введите название" class="form-control" id="title" name="title" required>
+        <div class="invalid-feedback">Введите название.</div>
+        <textarea placeholder="Введите текст" class="form-control" id="text" name="text" rows="5" required></textarea>
+        <button id="b_w_create" form="w_create" class="w-100 btn btn-lg btn-primary" type="submit">Создать запись</button>
+    </form>
+</div>
+{% endblock %}

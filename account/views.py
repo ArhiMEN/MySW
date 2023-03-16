@@ -1,14 +1,12 @@
 import os
 
 from datetime import date
-from functools import wraps
 
 from django.db.models import Q
 from django.forms.utils import ErrorList
-from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.utils import timezone
-from django.contrib.auth import authenticate, logout
+from django.contrib.auth import authenticate
 from django.views.decorators.http import require_GET, require_POST
 
 from .models import CustomUser, Wall, Message, File

@@ -48,7 +48,8 @@ export default {
   },
   methods: {
     getMessages() {
-      axios.post('api/friends/get_messages/', qs.stringify({user_id: this.user_id}), {headers: {'Authorisation': store.getters.getToken}})
+      axios.post('api/friends/get_messages/', qs.stringify({user_id: this.user_id}),
+          {headers: {'Authorisation': store.getters.getToken}})
           .then((resp) => {
             if (resp.data.success) {
               this.messages = resp.data.messages
@@ -58,7 +59,8 @@ export default {
           })
     },
     sendMessage() {
-      axios.post('api/friends/send_message/', qs.stringify({user_id: this.user_id, ...this.form}), {headers: {'Authorisation': store.getters.getToken}})
+      axios.post('api/friends/send_message/', qs.stringify({user_id: this.user_id, ...this.form}),
+          {headers: {'Authorisation': store.getters.getToken}})
           .then((resp) => {
             if (resp.data.success) {
               this.getMessages()

@@ -4,7 +4,7 @@ from datetime import date
 
 from django.db.models import Q
 from django.forms.utils import ErrorList
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate
 from django.views.decorators.http import require_GET, require_POST
@@ -320,7 +320,7 @@ def delete_file(request):
 def change_avatar(request):
     user_auth(request)
     if not request.user.is_authenticated:
-        return HttpResponseRedirect('/')
+        return JsonResponse({'success': False})
 
     form = AvatarForm(request.POST, request.FILES)
     if form.is_valid():
